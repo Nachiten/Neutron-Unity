@@ -9,36 +9,34 @@ public class GridSystem<TGridObject>
     private readonly TGridObject[,] gridObjects;
     private readonly int height;
     private readonly int width;
-    private readonly int floor;
     private readonly float floorHeight;
 
-    public GridSystem(int width, int height, float cellSize, int floor, float floorHeight,
+    public GridSystem(int width, int height, float cellSize, float floorHeight,
         Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
-        this.floor = floor;
         this.floorHeight = floorHeight;
         
         gridObjects = new TGridObject[width, height];
         
         for (int x = 0; x < width; x++)
         for (int y = 0; y < height; y++)
-            gridObjects[x, y] = createGridObject(this, new GridPosition(x, y, floor));
+            gridObjects[x, y] = createGridObject(this, new GridPosition(x, y));
     }
 
     public Vector3 GetWorldPos(GridPosition gridPosition)
     {
-        return new Vector3(gridPosition.x, gridPosition.y, 0) * cellSize + new Vector3(0, gridPosition.floor * floorHeight, 0);
+        return new Vector3(gridPosition.x, gridPosition.y, 0) * cellSize;
     }
 
     public GridPosition GetGridPos(Vector3 worldPosition)
     {
         int x = Mathf.RoundToInt(worldPosition.x / cellSize);
-        int y = Mathf.RoundToInt(worldPosition.z / cellSize);
+        int y = Mathf.RoundToInt(worldPosition.y / cellSize);
 
-        return new GridPosition(x, y, floor);
+        return new GridPosition(x, y);
     }
 
     public void CreateDebugObjects(Transform debugPrefab, Transform debugPrefabParent)
@@ -46,7 +44,7 @@ public class GridSystem<TGridObject>
         for (int x = 0; x < width; x++)
         for (int y = 0; y < height; y++)
         {
-            GridPosition gridPosition = new(x, y, floor);
+            GridPosition gridPosition = new(x, y);
             
             Transform debugTransform = Object.Instantiate(
                 debugPrefab, 
@@ -69,8 +67,7 @@ public class GridSystem<TGridObject>
         return gridPosition.x >= 0 &&
                gridPosition.x < width &&
                gridPosition.y >= 0 &&
-               gridPosition.y < height &&
-               gridPosition.floor == floor;
+               gridPosition.y < height;
     }
 
     public int GetWidth() => width;

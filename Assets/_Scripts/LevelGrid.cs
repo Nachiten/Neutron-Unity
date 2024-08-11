@@ -7,7 +7,6 @@ public class LevelGrid : Singleton<LevelGrid>
     private const float FLOOR_HEIGHT = 3f;
 
     public event Action<GridElement, GridPosition, GridPosition> OnAnyGridElementMovedGridPosition;
-    public static event Action OnAnyGridElementChangedFloor;
 
     [SerializeField] private Transform gridDebugObjectPrefab;
     [SerializeField] private Transform gridDebugObjectParent;
@@ -15,7 +14,6 @@ public class LevelGrid : Singleton<LevelGrid>
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private float cellSize;
-    [SerializeField] private int totalFloors;
     [SerializeField] private LayerMask obstaclesLayerMask;
 
     private List<GridSystem<GridObject>> gridSystems;
@@ -31,15 +29,12 @@ public class LevelGrid : Singleton<LevelGrid>
     private void InitializeGridSystems()
     {
         gridSystems = new List<GridSystem<GridObject>>();
+        
+        GridSystem<GridObject> gridSystem = new(width, height, cellSize, FLOOR_HEIGHT,
+            (gridSystem, gridPosition) => new GridObject(gridSystem, gridPosition));
 
-        for (int floor = 0; floor < totalFloors; floor++)
-        {
-            GridSystem<GridObject> gridSystem = new(width, height, cellSize, floor, FLOOR_HEIGHT,
-                (gridSystem, gridPosition) => new GridObject(gridSystem, gridPosition));
-
-            gridSystem.CreateDebugObjects(gridDebugObjectPrefab, gridDebugObjectParent);
-            gridSystems.Add(gridSystem);
-        }
+        gridSystem.CreateDebugObjects(gridDebugObjectPrefab, gridDebugObjectParent);
+        gridSystems.Add(gridSystem);
     }
 
     private void SetWalkableGridPositions()
@@ -48,9 +43,9 @@ public class LevelGrid : Singleton<LevelGrid>
 
         for (int x = 0; x < width; x++)
         for (int y = 0; y < height; y++)
-        for (int floor = 0; floor < totalFloors; floor++)
         {
-            GridPosition gridPosition = new(x, y, floor);
+            GridPosition gridPosition = new(x, y);
+            
             Vector3 worldPosition = GetWorldPos(gridPosition);
             const float raycastOffsetDistance = 1f;
 
@@ -109,10 +104,6 @@ public class LevelGrid : Singleton<LevelGrid>
         AddGridElementAtGridPos(toGridPos, gridElement);
 
         OnAnyGridElementMovedGridPosition?.Invoke(gridElement, fromGridPos, toGridPos);
-
-        // Only call this event if the GridElement changed floor
-        if (fromGridPos.floor != toGridPos.floor)
-            OnAnyGridElementChangedFloor?.Invoke();
     }
 
     /// <summary>
@@ -122,7 +113,7 @@ public class LevelGrid : Singleton<LevelGrid>
     /// <returns> True if the grid position is valid </returns>
     private bool GridPosIsValid(GridPosition gridPos)
     {
-        return gridPos.FloorIsValid(totalFloors) && GetGridSystem(gridPos.floor).GridPosIsValid(gridPos);
+        return GetGridSystem().GridPosIsValid(gridPos);
     }
 
     /// <summary>
@@ -162,7 +153,7 @@ public class LevelGrid : Singleton<LevelGrid>
     /// <returns> The grid object at the given grid position </returns>
     private GridObject GetGridObjectAtGridPos(GridPosition gridPos)
     {
-        return GetGridSystem(gridPos.floor).GetGridObject(gridPos);
+        return GetGridSystem().GetGridObject(gridPos);
     }
 
     /// <summary>
@@ -192,7 +183,7 @@ public class LevelGrid : Singleton<LevelGrid>
     /// <returns> The world position from the given grid position </returns>
     public Vector3 GetWorldPos(GridPosition gridPos)
     {
-        return GetGridSystem(gridPos.floor).GetWorldPos(gridPos);
+        return GetGridSystem().GetWorldPos(gridPos);
     }
     
     public bool ValidGridPosToMove(GridPosition gridPos)
@@ -200,9 +191,9 @@ public class LevelGrid : Singleton<LevelGrid>
         return GridPosIsValid(gridPos) && GridPosIsWalkable(gridPos);
     }
 
-    private GridSystem<GridObject> GetGridSystem(int floor) => gridSystems[floor];
-    public int GetWidth() => GetGridSystem(0).GetWidth();
-    public int GetHeight() => GetGridSystem(0).GetHeight(); 
-    public int GetTotalFloors() => totalFloors;
+    private GridSystem<GridObject> GetGridSystem(int index = 0) => gridSystems[index];
+    public int GetWidth() => GetGridSystem().GetWidth();
+    public int GetHeight() => GetGridSystem().GetHeight(); 
+    
     public float GetCellSize() => cellSize;
 }

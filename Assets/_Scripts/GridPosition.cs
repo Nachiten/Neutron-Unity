@@ -5,13 +5,11 @@ public readonly struct GridPosition : IEquatable<GridPosition>
 {
     public readonly int x;
     public readonly int y;
-    public readonly int floor;
 
-    public GridPosition(int x, int y, int floor)
+    public GridPosition(int x, int y)
     {
         this.x = x;
         this.y = y;
-        this.floor = floor;
     }
 
     public override string ToString()
@@ -21,7 +19,7 @@ public readonly struct GridPosition : IEquatable<GridPosition>
 
     public static bool operator ==(GridPosition a, GridPosition b)
     {
-        return a.x == b.x && a.y == b.y && a.floor == b.floor;
+        return a.x == b.x && a.y == b.y;
     }
 
     public static bool operator !=(GridPosition a, GridPosition b)
@@ -46,23 +44,11 @@ public readonly struct GridPosition : IEquatable<GridPosition>
 
     public static GridPosition operator +(GridPosition a, GridPosition b)
     {
-        return new GridPosition(a.x + b.x, a.y + b.y, a.floor + b.floor);
+        return new GridPosition(a.x + b.x, a.y + b.y);
     }
 
     public static GridPosition operator -(GridPosition a, GridPosition b)
     {
-        return new GridPosition(a.x - b.x, a.y - b.y, a.floor - b.floor);
-    }
-
-    public bool FloorIsValid(int totalFloors)
-    {
-        return floor >= 0 && floor < totalFloors;
-    }
-    
-    public static GridPosition Zero => new GridPosition(0, 0, 0);
-    
-    public static GridPosition operator *(GridPosition a, GridPosition b)
-    {
-        return new GridPosition(a.x * b.x, a.y * b.y, a.floor * b.floor);
+        return new GridPosition(a.x - b.x, a.y - b.y);
     }
 }

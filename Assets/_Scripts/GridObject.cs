@@ -3,7 +3,7 @@ using System.Linq;
 
 public class GridObject
 {
-    private GridPosition gridPosition;
+    private readonly GridPosition gridPosition;
     private GridSystem<GridObject> gridSystem;
     private readonly List<GridElement> gridElements;
     private bool isWalkable = true;
