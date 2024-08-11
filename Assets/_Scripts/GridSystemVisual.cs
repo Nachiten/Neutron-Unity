@@ -6,7 +6,7 @@ public class GridSystemVisual : MonoBehaviour
     [SerializeField] private Transform gridSystemVisualSingleParent;
     [SerializeField] private LayerMask objectivesLayerMask;
 
-    private GridSystemVisualSingle[,,] gridSystemVisualSingleArray;
+    private GridSystemVisualSingle[,,] gridSystemVisualSingles;
 
     private void Start()
     {
@@ -14,13 +14,13 @@ public class GridSystemVisual : MonoBehaviour
         int height = LevelGrid.Instance.GetHeight();
         int totalFloors = LevelGrid.Instance.GetTotalFloors();
 
-        gridSystemVisualSingleArray = new GridSystemVisualSingle[width, height, totalFloors];
+        gridSystemVisualSingles = new GridSystemVisualSingle[width, height, totalFloors];
 
         for (int x = 0; x < width; x++)
-        for (int z = 0; z < height; z++)
+        for (int y = 0; y < height; y++)
         for (int floor = 0; floor < totalFloors; floor++)
         {
-            Vector3 worldPos = LevelGrid.Instance.GetWorldPos(new GridPosition(x, z, floor));
+            Vector3 worldPos = LevelGrid.Instance.GetWorldPos(new GridPosition(x, y, floor));
             const float raycastOffsetDistance = 1f;
             
             // Check if there is already an objective on this grid position
@@ -39,7 +39,7 @@ public class GridSystemVisual : MonoBehaviour
                     Quaternion.identity, 
                     gridSystemVisualSingleParent);
                 
-            gridSystemVisualSingleArray[x, z, floor] = gridSystemVisual.GetComponent<GridSystemVisualSingle>();
+            gridSystemVisualSingles[x, y, floor] = gridSystemVisual.GetComponent<GridSystemVisualSingle>();
         }
     }
 }

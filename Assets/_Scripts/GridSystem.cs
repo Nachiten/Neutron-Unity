@@ -1,5 +1,6 @@
 using System;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class GridSystem<TGridObject>
 {
@@ -23,36 +24,34 @@ public class GridSystem<TGridObject>
         gridObjects = new TGridObject[width, height];
         
         for (int x = 0; x < width; x++)
-        for (int z = 0; z < height; z++)
-            gridObjects[x, z] = createGridObject(this, new GridPosition(x, z, floor));
+        for (int y = 0; y < height; y++)
+            gridObjects[x, y] = createGridObject(this, new GridPosition(x, y, floor));
     }
 
     public Vector3 GetWorldPos(GridPosition gridPosition)
     {
-        return new Vector3(gridPosition.x, 0, gridPosition.z) * cellSize + 
-               new Vector3(0, gridPosition.floor * floorHeight, 0);
+        return new Vector3(gridPosition.x, gridPosition.y, 0) * cellSize + new Vector3(0, gridPosition.floor * floorHeight, 0);
     }
 
     public GridPosition GetGridPos(Vector3 worldPosition)
     {
         int x = Mathf.RoundToInt(worldPosition.x / cellSize);
-        int z = Mathf.RoundToInt(worldPosition.z / cellSize);
+        int y = Mathf.RoundToInt(worldPosition.z / cellSize);
 
-        return new GridPosition(x, z, floor);
+        return new GridPosition(x, y, floor);
     }
 
     public void CreateDebugObjects(Transform debugPrefab, Transform debugPrefabParent)
     {
         for (int x = 0; x < width; x++)
-        for (int z = 0; z < height; z++)
+        for (int y = 0; y < height; y++)
         {
-            GridPosition gridPosition = new(x, z, floor);
-    
-            const float heightOffset = 2.1f;
-            Transform debugTransform = GameObject.Instantiate(
-                debugPrefab,
-                GetWorldPos(gridPosition) + Vector3.up * heightOffset, 
-                Quaternion.identity, 
+            GridPosition gridPosition = new(x, y, floor);
+            
+            Transform debugTransform = Object.Instantiate(
+                debugPrefab, 
+                GetWorldPos(gridPosition), 
+                Quaternion.identity,
                 debugPrefabParent);
     
             GridDebugObject gridDebugObject = debugTransform.GetComponent<GridDebugObject>();
@@ -62,15 +61,15 @@ public class GridSystem<TGridObject>
 
     public TGridObject GetGridObject(GridPosition gridPosition)
     {
-        return gridObjects[gridPosition.x, gridPosition.z];
+        return gridObjects[gridPosition.x, gridPosition.y];
     }
 
     public bool GridPosIsValid(GridPosition gridPosition)
     {
         return gridPosition.x >= 0 &&
                gridPosition.x < width &&
-               gridPosition.z >= 0 &&
-               gridPosition.z < height &&
+               gridPosition.y >= 0 &&
+               gridPosition.y < height &&
                gridPosition.floor == floor;
     }
 

@@ -47,10 +47,10 @@ public class LevelGrid : Singleton<LevelGrid>
         // By default, all grid positions are walkable
 
         for (int x = 0; x < width; x++)
-        for (int z = 0; z < height; z++)
+        for (int y = 0; y < height; y++)
         for (int floor = 0; floor < totalFloors; floor++)
         {
-            GridPosition gridPosition = new(x, z, floor);
+            GridPosition gridPosition = new(x, y, floor);
             Vector3 worldPosition = GetWorldPos(gridPosition);
             const float raycastOffsetDistance = 1f;
 
