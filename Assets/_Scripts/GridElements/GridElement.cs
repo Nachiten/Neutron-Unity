@@ -1,9 +1,10 @@
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class GridElement : MonoBehaviour
 {
-    private GridPosition currentGridPosition;
+    protected GridPosition currentGridPosition;
     private Vector3 targetPosition;
     private const float moveSpeed = 20f;
     private bool isMoving;
@@ -54,5 +55,10 @@ public class GridElement : MonoBehaviour
     public override string ToString()
     {
         return $"GridElement: {currentGridPosition}";
+    }
+    
+    public virtual List<GridPosition> GetAvailableMovePositions()
+    {
+        return new List<GridPosition>();
     }
 }

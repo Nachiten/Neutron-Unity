@@ -51,11 +51,11 @@ public class GridSystem<TGridObject>
                 debugPrefabParent);
     
             GridDebugObject gridDebugObject = debugTransform.GetComponent<GridDebugObject>();
-            gridDebugObject.SetGridObject(GetGridObject(gridPosition));
+            gridDebugObject.SetGridObject(GetGridObjectAtGridPos(gridPosition));
         }
     }
-
-    public TGridObject GetGridObject(GridPosition gridPosition)
+    
+    public TGridObject GetGridObjectAtGridPos(GridPosition gridPosition)
     {
         return gridObjects[gridPosition.x, gridPosition.y];
     }

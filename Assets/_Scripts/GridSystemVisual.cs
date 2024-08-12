@@ -5,7 +5,9 @@ public class GridSystemVisual : MonoBehaviour
 {
     [SerializeField] private Transform gridSystemVisualSinglePrefab;
     [SerializeField] private Transform gridSystemVisualSingleParent;
+    
     [SerializeField] private GridPositionSelection gridPositionSelection;
+    [SerializeField] private PieceMovement pieceMovement;
 
     private GridSystemVisualSingle[,] gridSystemVisualSingles;
     private Dictionary<GridVisualType, Color> gridVisualTypeColors;
@@ -28,8 +30,16 @@ public class GridSystemVisual : MonoBehaviour
         gridPositionSelection.OnGridPositionUnhovered += OnGridPositionUnhovered;
         gridPositionSelection.OnGridPositionSelected += OnGridPositionSelected;
         gridPositionSelection.OnGridPositionUnselected += OnGridPositionUnselected;
+        
+        pieceMovement.OnPieceSelected += OnPieceSelected;
     }
-    
+
+    private void OnPieceSelected(GridPosition gridPos)
+    {
+        List<GridPosition> availableMovePositions = LevelGrid.Instance.GetGridElementAtGridPos(gridPos).GetAvailableMovePositions();
+        ColorGridPositions(availableMovePositions, GridVisualType.Yellow);
+    }
+
     private void OnGridPositionHovered(GridPosition hoveredGridPos)
     {
         SetGridPositionsHovered(new List<GridPosition> {hoveredGridPos}, true);
@@ -42,14 +52,15 @@ public class GridSystemVisual : MonoBehaviour
     
     private void OnGridPositionSelected(GridPosition selectedGridPos)
     {
-        Debug.Log("[GridSystemVisual] Selected: " + selectedGridPos);
         ColorGridPositions(new List<GridPosition> {selectedGridPos}, GridVisualType.Red);
     }
     
     private void OnGridPositionUnselected(GridPosition gridPos)
     {
-        Debug.Log("[GridSystemVisual] Unselected: " + gridPos);
         ResetGridPositionColor(gridPos);
+        
+        if (LevelGrid.Instance.GridPosHasAnyGridElement(gridPos))
+            ResetGridPositionsColor(LevelGrid.Instance.GetGridElementAtGridPos(gridPos).GetAvailableMovePositions());
     }
 
     private void InstantiateGridSystemVisuals()
@@ -93,6 +104,11 @@ public class GridSystemVisual : MonoBehaviour
     private void ResetGridPositionColor(GridPosition gridPosition)
     {
         gridSystemVisualSingles[gridPosition.x, gridPosition.y].ResetColor();
+    }
+    
+    private void ResetGridPositionsColor(List<GridPosition> gridPositions)
+    {
+        gridPositions.ForEach(ResetGridPositionColor);
     }
     
     private void ResetAllGridPositionsColor()

@@ -115,7 +115,7 @@ public class LevelGrid : Singleton<LevelGrid>
     /// <returns> The grid object at the given grid position </returns>
     private GridObject GetGridObjectAtGridPos(GridPosition gridPos)
     {
-        return GetGridSystem().GetGridObject(gridPos);
+        return GetGridSystem().GetGridObjectAtGridPos(gridPos);
     }
 
     /// <summary>
