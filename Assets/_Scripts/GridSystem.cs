@@ -9,15 +9,13 @@ public class GridSystem<TGridObject>
     private readonly TGridObject[,] gridObjects;
     private readonly int height;
     private readonly int width;
-    private readonly float floorHeight;
 
-    public GridSystem(int width, int height, float cellSize, float floorHeight,
+    public GridSystem(int width, int height, float cellSize,
         Func<GridSystem<TGridObject>, GridPosition, TGridObject> createGridObject)
     {
         this.width = width;
         this.height = height;
         this.cellSize = cellSize;
-        this.floorHeight = floorHeight;
         
         gridObjects = new TGridObject[width, height];
         

@@ -8,13 +8,13 @@ public class GridElement : MonoBehaviour
     private const float moveSpeed = 20f;
     private bool isMoving;
     
-    protected virtual void Start()
+    protected void Start()
     {
         currentGridPosition = LevelGrid.Instance.GetGridPos(transform.position);
         LevelGrid.Instance.AddGridElementAtGridPos(currentGridPosition, this);
     }
 
-    protected virtual void Update()
+    protected void Update()
     {
         HandleMovement();
     }
@@ -31,24 +31,26 @@ public class GridElement : MonoBehaviour
             isMoving = false;
     }
     
-    protected bool Equals(GridElement other)
-    {
-        return base.Equals(other) && currentGridPosition.Equals(other.currentGridPosition);
-    }
-
     public override bool Equals(object obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
-        return Equals((GridElement)obj);
+        if (ReferenceEquals(null, obj)) 
+            return false;
+        if (ReferenceEquals(this, obj))
+            return true;
+        
+        return obj.GetType() == GetType() && Equals((GridElement)obj);
+    }
+    
+    private bool Equals(GridElement other)
+    {
+        return base.Equals(other) && currentGridPosition.Equals(other.currentGridPosition);
     }
 
     public override int GetHashCode()
     {
         return HashCode.Combine(base.GetHashCode(), currentGridPosition);
     }
-    
+
     public override string ToString()
     {
         return $"GridElement: {currentGridPosition}";

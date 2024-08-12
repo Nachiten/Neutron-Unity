@@ -2,16 +2,34 @@ using UnityEngine;
 
 public class GridSystemVisualSingle : MonoBehaviour
 {
-    [SerializeField] private MeshRenderer meshRenderer;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private Transform hoveredVisual;
+    
+    private Color defaultColor;
 
-    public void Show(Material material)
+    private void Awake()
     {
-        meshRenderer.enabled = true;
-        meshRenderer.material = material;
+        SetHovered(false);
     }
 
-    public void Hide()
+    public void SetDefaultColor(Color color)
     {
-        meshRenderer.enabled = false;
+        spriteRenderer.color = color;
+        defaultColor = color;
+    }
+    
+    public void SetSpriteColor(Color color)
+    {
+        spriteRenderer.color = color;
+    }
+    
+    public void ResetColor()
+    {
+        spriteRenderer.color = defaultColor;
+    }
+
+    public void SetHovered(bool hovered)
+    {
+        hoveredVisual.gameObject.SetActive(hovered);
     }
 }

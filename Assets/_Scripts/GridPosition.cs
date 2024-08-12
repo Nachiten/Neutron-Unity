@@ -51,4 +51,16 @@ public readonly struct GridPosition : IEquatable<GridPosition>
     {
         return new GridPosition(a.x - b.x, a.y - b.y);
     }
+    
+    public static GridPosition Null => new(-1, -1);
+    
+    public static bool operator true(GridPosition gridPosition)
+    {
+        return gridPosition == GridPosition.Null;
+    }
+    
+    public static bool operator false(GridPosition gridPosition)
+    {
+        return gridPosition != GridPosition.Null;
+    }
 }

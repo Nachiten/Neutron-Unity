@@ -6,7 +6,6 @@ public class GridObject
     private readonly GridPosition gridPosition;
     private GridSystem<GridObject> gridSystem;
     private readonly List<GridElement> gridElements;
-    private bool isWalkable = true;
 
     public GridObject(GridSystem<GridObject> gridSystem, GridPosition gridPosition)
     {
@@ -46,7 +45,4 @@ public class GridObject
     {
         return HasAnyGridElement() ? gridElements[0] : null;
     }
-    
-    public void SetIsWalkable(bool _isWalkable) => isWalkable = _isWalkable;
-    public bool GetIsWalkable() => isWalkable;
 }

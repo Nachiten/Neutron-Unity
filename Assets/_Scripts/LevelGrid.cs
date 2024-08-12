@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class LevelGrid : Singleton<LevelGrid>
 {
-    private const float FLOOR_HEIGHT = 3f;
-
     public event Action<GridElement, GridPosition, GridPosition> OnAnyGridElementMovedGridPosition;
 
     [SerializeField] private Transform gridDebugObjectPrefab;
@@ -23,43 +21,17 @@ public class LevelGrid : Singleton<LevelGrid>
         base.Awake();
         
         InitializeGridSystems();
-        SetWalkableGridPositions();
     }
 
     private void InitializeGridSystems()
     {
         gridSystems = new List<GridSystem<GridObject>>();
         
-        GridSystem<GridObject> gridSystem = new(width, height, cellSize, FLOOR_HEIGHT,
+        GridSystem<GridObject> gridSystem = new(width, height, cellSize, 
             (gridSystem, gridPosition) => new GridObject(gridSystem, gridPosition));
 
         gridSystem.CreateDebugObjects(gridDebugObjectPrefab, gridDebugObjectParent);
         gridSystems.Add(gridSystem);
-    }
-
-    private void SetWalkableGridPositions()
-    {
-        // By default, all grid positions are walkable
-
-        for (int x = 0; x < width; x++)
-        for (int y = 0; y < height; y++)
-        {
-            GridPosition gridPosition = new(x, y);
-            
-            Vector3 worldPosition = GetWorldPos(gridPosition);
-            const float raycastOffsetDistance = 1f;
-
-            // Check if there is an obstacle above the grid position
-            bool obstaclesRaycast = Physics.Raycast(
-                worldPosition + Vector3.down * raycastOffsetDistance,
-                Vector3.up,
-                raycastOffsetDistance * 2,
-                obstaclesLayerMask);
-
-            // If there is an obstacle, set the grid position as unwalkable
-            if (obstaclesRaycast)
-                GetGridObjectAtGridPos(gridPosition).SetIsWalkable(false);
-        }
     }
 
     /// <summary>
@@ -77,7 +49,7 @@ public class LevelGrid : Singleton<LevelGrid>
     /// </summary>
     /// <param name="gridPos"> The grid position to get the list of units from </param>
     /// <returns> The list of units at the given grid position </returns>
-    public List<GridElement> GetGridElementListAtGridPos(GridPosition gridPos)
+    public List<GridElement> GetGridElementsAtGridPos(GridPosition gridPos)
     {
         return GetGridObjectAtGridPos(gridPos).GetGridElementList();
     }
@@ -111,19 +83,9 @@ public class LevelGrid : Singleton<LevelGrid>
     /// </summary>
     /// <param name="gridPos"> The grid position to check </param>
     /// <returns> True if the grid position is valid </returns>
-    private bool GridPosIsValid(GridPosition gridPos)
+    public bool GridPosIsValid(GridPosition gridPos)
     {
         return GetGridSystem().GridPosIsValid(gridPos);
-    }
-
-    /// <summary>
-    /// Get if the given grid position is walkable
-    /// </summary>
-    /// <param name="gridPos"> The grid position to check </param>
-    /// <returns> True if the grid position is walkable </returns>
-    private bool GridPosIsWalkable(GridPosition gridPos)
-    {
-        return GetGridObjectAtGridPos(gridPos).GetIsWalkable();
     }
 
     /// <summary>
@@ -157,23 +119,13 @@ public class LevelGrid : Singleton<LevelGrid>
     }
 
     /// <summary>
-    /// Get the floor from the given world position
-    /// </summary>
-    /// <param name="worldPos"> The world position to get the floor from </param>
-    /// <returns> The floor from the given world position </returns>
-    private int GetFloorFromWorldPos(Vector3 worldPos)
-    {
-        return Mathf.RoundToInt(worldPos.y / FLOOR_HEIGHT);
-    }
-
-    /// <summary>
     /// Get the grid position from the given world position
     /// </summary>
     /// <param name="worldPos"> The world position to get the grid position from </param>
     /// <returns> The grid position from the given world position </returns>
     public GridPosition GetGridPos(Vector3 worldPos)
     {
-        return GetGridSystem(GetFloorFromWorldPos(worldPos)).GetGridPos(worldPos);
+        return GetGridSystem().GetGridPos(worldPos);
     }
 
     /// <summary>
@@ -186,11 +138,6 @@ public class LevelGrid : Singleton<LevelGrid>
         return GetGridSystem().GetWorldPos(gridPos);
     }
     
-    public bool ValidGridPosToMove(GridPosition gridPos)
-    {
-        return GridPosIsValid(gridPos) && GridPosIsWalkable(gridPos);
-    }
-
     private GridSystem<GridObject> GetGridSystem(int index = 0) => gridSystems[index];
     public int GetWidth() => GetGridSystem().GetWidth();
     public int GetHeight() => GetGridSystem().GetHeight(); 
