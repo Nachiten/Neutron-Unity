@@ -468,7 +468,7 @@ Camera:
   far clip plane: 1000
   field of view: 34
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 5.5
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -901,7 +901,7 @@ MonoBehaviour:
   gridDebugObjectPrefab: {fileID: 2354604696073849152, guid: dce35a5ffe47a304dab197b47936181c, type: 3}
   gridDebugObjectParent: {fileID: 1388420730}
   width: 5
-  height: 10
+  height: 5
   cellSize: 2
   obstaclesLayerMask:
     serializedVersion: 2
@@ -1129,17 +1129,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   gridSystemVisualSinglePrefab: {fileID: 2924544935650773820, guid: 966c2c850670e904f96b35c5b6883351, type: 3}
   gridSystemVisualSingleParent: {fileID: 1316427586}
-  gridVisualTypeMaterials:
-  - gridVisualType: 0
-    material: {fileID: 2100000, guid: 44c9edfa5d7974a408a7fc9f8cff625f, type: 2}
-  - gridVisualType: 1
-    material: {fileID: 2100000, guid: f751843800490d64aa362c7d2ad528b8, type: 2}
-  - gridVisualType: 2
-    material: {fileID: 2100000, guid: 6a4772ca8fca4d847861c762d63aeb1a, type: 2}
-  - gridVisualType: 3
-    material: {fileID: 2100000, guid: e9890711643fcbc49a67cabaa97bc2e1, type: 2}
-  - gridVisualType: 4
-    material: {fileID: 2100000, guid: 5c4e4310fc6cd0149afffc3b53b2f491, type: 2}
   gridPositionSelection: {fileID: 1300590479}
 --- !u!1 &2116701107
 GameObject:

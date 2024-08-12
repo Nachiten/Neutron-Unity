@@ -24,7 +24,7 @@ public class GridPositionSelection : MonoBehaviour
 
         if (!LevelGrid.Instance.GridPosIsValid(newHoveredGridPosition))
         {
-            if (hoveredGridPosition != GridPosition.Null)
+            if (hoveredGridPosition)
                 UnhoverPosition();
             
             return;
@@ -44,19 +44,19 @@ public class GridPositionSelection : MonoBehaviour
     private void HoverPosition(GridPosition gridPosition)
     {
         // If there is a previously hovered grid position, unhover it
-        if (hoveredGridPosition != GridPosition.Null)
+        if (hoveredGridPosition)
             OnGridPositionUnhovered?.Invoke(hoveredGridPosition);
         
         hoveredGridPosition = gridPosition;
         
         // If the new hovered grid position is not null, hover it
-        if (hoveredGridPosition != GridPosition.Null)
+        if (hoveredGridPosition)
             OnGridPositionHovered?.Invoke(hoveredGridPosition);
     }
     
     private void HandleSelection()
     {
-        if (!InputManager.Instance.WasPrimaryActionPerformedThisFrame())
+        if (!InputManager.Instance.WasPrimaryActionReleasedThisFrame())
             return;
         
         GridPosition newSelectedGridPosition = MouseWorldVisual.GetMouseGridPosition();
@@ -81,13 +81,13 @@ public class GridPositionSelection : MonoBehaviour
     private void SelectPosition(GridPosition gridPosition)
     {
         // If there is a previously hovered grid position, unhover it
-        if (selectedGridPosition != GridPosition.Null)
+        if (selectedGridPosition)
             OnGridPositionUnselected?.Invoke(selectedGridPosition);
         
         selectedGridPosition = gridPosition;
         
         // If the new hovered grid position is not null, hover it
-        if (selectedGridPosition != GridPosition.Null)
+        if (selectedGridPosition)
             OnGridPositionSelected?.Invoke(selectedGridPosition);
     }
 }

@@ -11,8 +11,10 @@ public class InputManager : Singleton<InputManager>
     {
         base.Awake();
         
+#if USE_NEW_INPUT_SYSTEM
         playerInputActions = new AutoGen_PlayerInputActions();
         playerInputActions.Player.Enable();
+#endif
     }
     
     public Vector2 GetMouseScreenPosition()
@@ -24,19 +26,19 @@ public class InputManager : Singleton<InputManager>
 #endif
     }
 
-    public bool WasPrimaryActionPerformedThisFrame()
+    public bool WasPrimaryActionReleasedThisFrame()
     {
 #if USE_NEW_INPUT_SYSTEM
-        return playerInputActions.Player.PrimaryAction.WasPerformedThisFrame();
+        return playerInputActions.Player.PrimaryAction.WasReleasedThisFrame();
 #else
         return Input.GetMouseButtonDown(0);
 #endif
     }
     
-    public bool WasSecondaryActionPerformedThisFrame()
+    public bool WasSecondaryActionReleasedThisFrame()
     {
 #if USE_NEW_INPUT_SYSTEM
-        return playerInputActions.Player.SecondaryAction.WasPerformedThisFrame();
+        return playerInputActions.Player.SecondaryAction.WasReleasedThisFrame();
 #else
         return Input.GetMouseButtonDown(1);
 #endif

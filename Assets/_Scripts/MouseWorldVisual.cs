@@ -18,10 +18,13 @@ public class MouseWorldVisual : MonoBehaviour
     
     private void Update()
     {
-        transform.position = GetMouseWorldPosition();
+        Vector3 mouseWorldPosition = GetMouseWorldPosition(out bool valid);
+        
+        if (valid)
+            transform.position = mouseWorldPosition;
     }
     
-    private static Vector3 GetMouseWorldPosition()
+    private static Vector3 GetMouseWorldPosition(out bool valid)
     {
         Vector2 mouseScreenPosition = InputManager.Instance.GetMouseScreenPosition();
         
@@ -35,16 +38,20 @@ public class MouseWorldVisual : MonoBehaviour
         {
             // If there is a renderer, and it is enabled, return the point
             if (raycastHit.transform.TryGetComponent(out Renderer renderer) && renderer.enabled)
+            {
+                valid = true;
                 return raycastHit.point;
+            }
         }
         
+        valid = false;
         return Vector3.zero;
     }
     
     public static GridPosition GetMouseGridPosition()
     {
-        Vector3 mouseWorldPosition = GetMouseWorldPosition();
+        Vector3 mouseWorldPosition = GetMouseWorldPosition(out bool valid);
         
-        return LevelGrid.Instance.GetGridPos(mouseWorldPosition);
+        return valid ? LevelGrid.Instance.GetGridPos(mouseWorldPosition) : GridPosition.Null;
     }
 }
