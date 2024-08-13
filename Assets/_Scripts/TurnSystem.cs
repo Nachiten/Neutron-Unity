@@ -4,8 +4,8 @@ using UnityEngine;
 public class TurnSystem : MonoBehaviour
 {
     [SerializeField] private PieceMovement pieceMovement;
-
-    public Action<int> OnTurnChanged;
+    
+    public Action OnStateChanged;
     
     private int currentPlayerIndex;
     private int currentTurn;
@@ -26,7 +26,9 @@ public class TurnSystem : MonoBehaviour
     private void Awake()
     {
         currentPlayerIndex = 0;
-        state = State.MovingNeutron;
+        currentTurn = 0;
+        
+        SetState(State.MovingNeutron);
     }
 
     private void Start()
@@ -40,29 +42,27 @@ public class TurnSystem : MonoBehaviour
         switch (state)
         {
             case State.MovingNeutron:
-                state = State.WaitingForMovementFinish;
                 nextState = State.MovingElectron;
+                SetState(State.WaitingForMovementFinish);
                 break;
             case State.MovingElectron:
-                state = State.WaitingForMovementFinish;
                 nextState = State.MovingNeutron;
+                SetState(State.WaitingForMovementFinish);
                 break;
             default:
                 throw new ArgumentOutOfRangeException();
         }
     }
     
-    private void OnMoveEnded(GridPosition obj)
+    private void OnMoveEnded(GridPosition newGridPos)
     {
-        state = nextState;
-        
-        if (state == State.MovingNeutron)
+        if (nextState == State.MovingNeutron)
         {
             currentTurn++;
             currentPlayerIndex = currentTurn % 2;
-            
-            OnTurnChanged?.Invoke(currentPlayerIndex);
         }
+        
+        SetState(nextState);
     }
 
     public bool IsValidGridPosForTurn(GridPosition gridPosition)
@@ -77,4 +77,15 @@ public class TurnSystem : MonoBehaviour
             _ => false
         };
     }
+    
+    private void SetState(State newState)
+    {
+        state = newState;
+        OnStateChanged?.Invoke();
+    }
+    
+    public int GetCurrentPlayerIndex() => currentPlayerIndex;
+    
+    public bool IsMovingNeutron() => state == State.MovingNeutron;
+    public bool IsMovingElectron() => state == State.MovingElectron;
 }
