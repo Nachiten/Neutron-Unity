@@ -12,7 +12,6 @@ public class LevelGrid : Singleton<LevelGrid>
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private float cellSize;
-    [SerializeField] private LayerMask obstaclesLayerMask;
 
     private List<GridSystem<GridObject>> gridSystems;
 
