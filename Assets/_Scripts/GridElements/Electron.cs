@@ -6,6 +6,8 @@ using UnityEngine;
 /// </summary>
 public class Electron : GridElement
 {
+    [SerializeField] private int playerIndex;
+    
     public override List<GridPosition> GetAvailableMovePositions()
     {
         List<Vector2> availableDirections = Constants.directions;
@@ -35,4 +37,6 @@ public class Electron : GridElement
     {
         return new GridPosition(originGridPos.x + (int) direction.x, originGridPos.y + (int) direction.y);
     }
+    
+    public int GetPlayerIndex() => playerIndex;
 }
