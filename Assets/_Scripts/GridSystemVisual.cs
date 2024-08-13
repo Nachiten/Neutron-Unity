@@ -12,6 +12,10 @@ public class GridSystemVisual : MonoBehaviour
     private GridSystemVisualSingle[,] gridSystemVisualSingles;
     private Dictionary<GridVisualType, Color> gridVisualTypeColors;
 
+    private List<GridPosition> availableMovePositions;
+    private GridPosition hoveredGridPosition = GridPosition.Null;
+    private GridPosition selectedGridPosition = GridPosition.Null;
+
     private void Awake()
     { 
         List<GridVisualTypeColor> gridVisualTypeColorList = Resources.Load<GridVisualTypeColorsSO>(nameof(GridVisualTypeColorsSO)).gridVisualTypeColors;
@@ -21,46 +25,70 @@ public class GridSystemVisual : MonoBehaviour
         foreach (GridVisualTypeColor gridVisualTypeColor in gridVisualTypeColorList)
             gridVisualTypeColors.Add(gridVisualTypeColor.gridVisualType, gridVisualTypeColor.color);
     }
-
+    
     private void Start()
     {
         InstantiateGridSystemVisuals();
 
         gridPositionSelection.OnGridPositionHovered += OnGridPositionHovered;
         gridPositionSelection.OnGridPositionUnhovered += OnGridPositionUnhovered;
-        gridPositionSelection.OnGridPositionSelected += OnGridPositionSelected;
-        gridPositionSelection.OnGridPositionUnselected += OnGridPositionUnselected;
         
         pieceMovement.OnPieceSelected += OnPieceSelected;
+        pieceMovement.OnPieceUnselected += OnPieceUnselected;
+        pieceMovement.OnMoveStarted += OnMoveStarted;
+    }
+
+    private void OnMoveStarted(GridPosition obj)
+    {
+        ResetAllGridPositionsColor();
+        availableMovePositions = null;
+        selectedGridPosition = GridPosition.Null;
     }
 
     private void OnPieceSelected(GridPosition gridPos)
     {
-        List<GridPosition> availableMovePositions = LevelGrid.Instance.GetGridElementAtGridPos(gridPos).GetAvailableMovePositions();
+        if (selectedGridPosition)
+            OnPieceUnselected(selectedGridPosition);
+        
+        availableMovePositions = LevelGrid.Instance.GetGridElementAtGridPos(gridPos).GetAvailableMovePositions();
         ColorGridPositions(availableMovePositions, GridVisualType.Yellow);
+        
+        SelectGridPosition(gridPos);
+    }
+    
+    private void OnPieceUnselected(GridPosition gridPos)
+    {
+        ColorGridPositions(availableMovePositions, GridVisualType.White);
+        UnselectGridPosition(gridPos);
     }
 
     private void OnGridPositionHovered(GridPosition hoveredGridPos)
     {
+        if (hoveredGridPosition) 
+            SetGridPositionsHovered(new List<GridPosition> { hoveredGridPosition }, false);
+        
+        hoveredGridPosition = hoveredGridPos;
+        
         SetGridPositionsHovered(new List<GridPosition> {hoveredGridPos}, true);
     }
 
     private void OnGridPositionUnhovered(GridPosition gridPos)
     {
         SetGridPositionsHovered(new List<GridPosition> {gridPos}, false);
+        
+        hoveredGridPosition = GridPosition.Null;
     }
     
-    private void OnGridPositionSelected(GridPosition selectedGridPos)
+    private void SelectGridPosition(GridPosition gridPos)
     {
-        ColorGridPositions(new List<GridPosition> {selectedGridPos}, GridVisualType.Red);
+        ColorGridPositions(new List<GridPosition> {gridPos}, GridVisualType.Red);
+        selectedGridPosition = gridPos;
     }
     
-    private void OnGridPositionUnselected(GridPosition gridPos)
+    private void UnselectGridPosition(GridPosition gridPos)
     {
         ResetGridPositionColor(gridPos);
-        
-        if (LevelGrid.Instance.GridPosHasAnyGridElement(gridPos))
-            ResetGridPositionsColor(LevelGrid.Instance.GetGridElementAtGridPos(gridPos).GetAvailableMovePositions());
+        selectedGridPosition = GridPosition.Null;
     }
 
     private void InstantiateGridSystemVisuals()

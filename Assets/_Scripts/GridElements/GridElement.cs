@@ -2,13 +2,15 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GridElement : MonoBehaviour
+public abstract class GridElement : MonoBehaviour
 {
     protected GridPosition currentGridPosition;
+    protected List<GridPosition> availableMovePositions;
+
     private Vector3 targetPosition;
     private const float moveSpeed = 20f;
     private bool isMoving;
-    
+
     protected void Start()
     {
         currentGridPosition = LevelGrid.Instance.GetGridPos(transform.position);
@@ -19,29 +21,50 @@ public class GridElement : MonoBehaviour
     {
         HandleMovement();
     }
-    
+
     private void HandleMovement()
     {
         if (!isMoving)
-            return; 
-        
+            return;
+
         // Calculate new position
         transform.position = Vector3.MoveTowards(transform.position, targetPosition, moveSpeed * Time.deltaTime);
-        
+
         if (transform.position == targetPosition)
+        {
             isMoving = false;
+            
+            GridPosition targetGridPos = LevelGrid.Instance.GetGridPos(targetPosition);
+            
+            LevelGrid.Instance.MoveGridElementGridPos(this, currentGridPosition, targetGridPos);
+            currentGridPosition = targetGridPos;
+        }
     }
     
+    public void MoveToGridPosition(GridPosition gridPos)
+    {
+        if (!IsMovePositionValid(gridPos))
+        {
+            Debug.LogError($"Invalid move position: {gridPos}");
+            return;
+        }
+        
+        targetPosition = LevelGrid.Instance.GetWorldPos(gridPos);
+      
+        
+        isMoving = true;
+    }
+
     public override bool Equals(object obj)
     {
-        if (ReferenceEquals(null, obj)) 
+        if (ReferenceEquals(null, obj))
             return false;
         if (ReferenceEquals(this, obj))
             return true;
-        
+
         return obj.GetType() == GetType() && Equals((GridElement)obj);
     }
-    
+
     private bool Equals(GridElement other)
     {
         return base.Equals(other) && currentGridPosition.Equals(other.currentGridPosition);
@@ -57,8 +80,10 @@ public class GridElement : MonoBehaviour
         return $"GridElement: {currentGridPosition}";
     }
     
-    public virtual List<GridPosition> GetAvailableMovePositions()
+    public bool IsMovePositionValid(GridPosition gridPos)
     {
-        return new List<GridPosition>();
+        return availableMovePositions.Contains(gridPos);
     }
+    
+    public abstract List<GridPosition> GetAvailableMovePositions();
 }

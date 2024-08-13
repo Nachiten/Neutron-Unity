@@ -1,4 +1,5 @@
 using System;
+using UnityEngine;
 
 [Serializable]
 public readonly struct GridPosition : IEquatable<GridPosition>
@@ -11,7 +12,13 @@ public readonly struct GridPosition : IEquatable<GridPosition>
         this.x = x;
         this.y = y;
     }
-
+    
+    public GridPosition(Vector2 position)
+    {
+        x = (int) position.x;
+        y = (int) position.y;
+    }
+    
     public override string ToString()
     {
         return $"({x}, {y})";

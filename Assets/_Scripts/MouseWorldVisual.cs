@@ -9,6 +9,8 @@ public class MouseWorldVisual : MonoBehaviour
     // PRIVATE Singleton
     private static MouseWorldVisual Instance;
     
+    private const float RAYCAST_DISTANCE = 100f;
+    
     private void Awake()
     { 
         Instance = this;      
@@ -30,7 +32,7 @@ public class MouseWorldVisual : MonoBehaviour
         
         Ray ray = Instance.mainCamera.ScreenPointToRay(mouseScreenPosition);
         
-        RaycastHit[] raycastHits = Physics.RaycastAll(ray, 15f, Instance.mousePlaneLayerMask);
+        RaycastHit[] raycastHits = Physics.RaycastAll(ray, RAYCAST_DISTANCE, Instance.mousePlaneLayerMask);
         
         System.Array.Sort(raycastHits, (x, y) => x.distance.CompareTo(y.distance));
         

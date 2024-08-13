@@ -6,13 +6,19 @@ public class PieceMovement : MonoBehaviour
     [SerializeField] private GridPositionSelection gridPositionSelection;
 
     public Action<GridPosition> OnPieceSelected;
-
+    public Action<GridPosition> OnPieceUnselected;
+    public Action<GridPosition> OnMoveStarted;
+    
     private GridPosition selectedPiece = GridPosition.Null;
+    private GridElement selectedGridElement;
     
     private enum State
     {
+        // Description: The player is selecting a piece to move
         SelectingPiece,
+        // Description: The player is selecting a move position for the selected piece
         SelectingMove,
+        // Description: The selected piece is moving to the selected move position
         MovingPiece
     }
     
@@ -21,9 +27,18 @@ public class PieceMovement : MonoBehaviour
     private void Start()
     {
         gridPositionSelection.OnGridPositionSelected += OnGridPositionSelected;
-        gridPositionSelection.OnGridPositionUnselected += OnGridPositionUnselected;
+        LevelGrid.Instance.OnAnyGridElementMovedGridPosition += OnAnyGridElementMovedGridPosition;
         
         state = State.SelectingPiece;
+    }
+
+    private void OnAnyGridElementMovedGridPosition(GridElement gridElement, GridPosition fromGridPos, GridPosition toGridPos)
+    {
+        if (state != State.MovingPiece || gridElement != selectedGridElement)
+            return;
+        
+        state = State.SelectingPiece;
+        selectedPiece = GridPosition.Null;
     }
 
     private void OnGridPositionSelected(GridPosition gridPosition)
@@ -31,22 +46,38 @@ public class PieceMovement : MonoBehaviour
         switch (state)
         {
             case State.SelectingPiece:
-                // Check if there is a piece at the selected position
-                // If there is a piece, emit event and change state to SelectingMove
-
                 if (!LevelGrid.Instance.GridPosHasAnyGridElement(gridPosition))
                     return;
                 
+                selectedPiece = gridPosition;
+                selectedGridElement = LevelGrid.Instance.GetGridElementAtGridPos(gridPosition);
+                
                 OnPieceSelected?.Invoke(gridPosition);
                 
-                selectedPiece = gridPosition;
                 state = State.SelectingMove;
                 break;
             case State.SelectingMove:
-                // Select move
-                // Check if move is valid
-                // If valid, move the piece and change state to MovingPiece
-                // If not valid, do nothing
+                if (gridPosition == selectedPiece)
+                {
+                    state = State.SelectingPiece;
+                    selectedPiece = GridPosition.Null;
+                    selectedGridElement = null;
+                    OnPieceUnselected?.Invoke(gridPosition);
+                    return;
+                }
+                
+                if (LevelGrid.Instance.GridPosHasAnyGridElement(gridPosition))
+                { 
+                    state = State.SelectingPiece;
+                    OnGridPositionSelected(gridPosition);
+                }
+                
+                if (!selectedGridElement.IsMovePositionValid(gridPosition))
+                    return;
+                
+                selectedGridElement.MoveToGridPosition(gridPosition);
+                OnMoveStarted?.Invoke(gridPosition);
+                state = State.MovingPiece;
                 break;
             case State.MovingPiece:
                 // Do nothing, wait for event of piece finished moving
@@ -55,55 +86,4 @@ public class PieceMovement : MonoBehaviour
                 throw new ArgumentOutOfRangeException();
         }
     }
-    
-    private void OnGridPositionUnselected(GridPosition gridPosition)
-    {
-        switch (state)
-        {
-            case State.SelectingPiece:
-                break;
-            case State.SelectingMove:
-                if (gridPosition == selectedPiece)
-                {
-                    state = State.SelectingPiece;
-                    selectedPiece = GridPosition.Null;
-                }
-                break;
-            case State.MovingPiece:
-                break;
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
-    }
-
-    // private void Update()
-    // {
-    //     switch (state)
-    //     {
-    //         case State.SelectingPiece:
-    //             HandleSelectingPiece();
-    //             break;
-    //         case State.SelectingMove:
-    //             HandleSelectingMove();
-    //             break;
-    //         case State.MovingPiece:
-    //             HandleMovingPiece();
-    //             break;
-    //     }
-    // }
-    //
-    // private void HandleMovingPiece()
-    // {
-    //     throw new System.NotImplementedException();
-    // }
-    //
-    // private void HandleSelectingMove()
-    // {
-    //     throw new System.NotImplementedException();
-    // }
-    //
-    // private void HandleSelectingPiece()
-    // {
-    //     throw new System.NotImplementedException();
-    // }
 }

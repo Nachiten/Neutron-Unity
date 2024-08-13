@@ -1,23 +1,25 @@
 using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
 
+/// <summary>
+/// Can move 1 cell in any direction
+/// </summary>
 public class Neutron : GridElement
 {
     public override List<GridPosition> GetAvailableMovePositions()
     {
-        List<GridPosition> availableMovePositions = new()
-        {
-            new GridPosition(currentGridPosition.x - 1, currentGridPosition.y - 1),
-            new GridPosition(currentGridPosition.x, currentGridPosition.y - 1),
-            new GridPosition(currentGridPosition.x + 1, currentGridPosition.y - 1),
-            new GridPosition(currentGridPosition.x - 1, currentGridPosition.y),
-            new GridPosition(currentGridPosition.x + 1, currentGridPosition.y),
-            new GridPosition(currentGridPosition.x - 1, currentGridPosition.y + 1),
-            new GridPosition(currentGridPosition.x, currentGridPosition.y + 1),
-            new GridPosition(currentGridPosition.x + 1, currentGridPosition.y + 1)
-        };
+        List<Vector2> availableDirections = Constants.directions;
         
-        availableMovePositions.RemoveAll(pos => !LevelGrid.Instance.GridPosIsValid(pos));
+        List<GridPosition> _availableMovePositions = availableDirections.Select(
+            dir => new GridPosition(currentGridPosition.x + (int) dir.x, currentGridPosition.y + (int) dir.y))
+            .ToList();
         
-        return availableMovePositions;
+        _availableMovePositions.RemoveAll(pos => 
+            !LevelGrid.Instance.GridPosIsValid(pos) || 
+            LevelGrid.Instance.GridPosHasAnyGridElement(pos));
+        
+        availableMovePositions = _availableMovePositions;
+        return _availableMovePositions;
     }
 }
