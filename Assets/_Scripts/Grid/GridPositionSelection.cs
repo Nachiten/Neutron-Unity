@@ -3,13 +3,19 @@ using UnityEngine;
 
 public class GridPositionSelection : MonoBehaviour
 {
+    [SerializeField] private WinManager winManager;
+    
     public Action<GridPosition> OnGridPositionSelected;
-   
     public Action<GridPosition> OnGridPositionHovered;
     public Action<GridPosition> OnGridPositionUnhovered;
     
     private GridPosition hoveredGridPosition = GridPosition.Null;
-    
+
+    private void Start()
+    {
+        winManager.OnPlayerWon += OnPlayerWon;
+    }
+
     private void Update()
     {
         HandleHovering();
@@ -62,5 +68,11 @@ public class GridPositionSelection : MonoBehaviour
     private void SelectPosition(GridPosition gridPosition)
     {
         OnGridPositionSelected?.Invoke(gridPosition);
+    }
+    
+    private void OnPlayerWon(int obj)
+    {
+        UnhoverPosition();
+        enabled = false;
     }
 }

@@ -7,7 +7,7 @@ using UnityEngine;
 /// </summary>
 public class Neutron : GridElement
 {
-    public override List<GridPosition> GetAvailableMovePositions()
+    public override void CalculateAvailableMovePositions()
     {
         List<Vector2> availableDirections = Constants.directions;
         
@@ -20,6 +20,5 @@ public class Neutron : GridElement
             LevelGrid.Instance.GridPosHasAnyGridElement(pos));
         
         availableMovePositions = _availableMovePositions;
-        return _availableMovePositions;
     }
 }

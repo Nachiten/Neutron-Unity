@@ -49,8 +49,12 @@ public class GridSystemVisual : MonoBehaviour
     {
         if (selectedGridPosition)
             OnPieceUnselected(selectedGridPosition);
+
+        GridElement gridElement = LevelGrid.Instance.GetGridElementAtGridPos(gridPos);
         
-        availableMovePositions = LevelGrid.Instance.GetGridElementAtGridPos(gridPos).GetAvailableMovePositions();
+        gridElement.CalculateAvailableMovePositions();
+        availableMovePositions = gridElement.GetAvailableMovePositions();
+        
         ColorGridPositions(availableMovePositions, GridVisualType.Yellow);
         
         SelectGridPosition(gridPos);

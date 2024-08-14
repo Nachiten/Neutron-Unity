@@ -21,7 +21,9 @@ public class GridSystem<TGridObject>
         
         for (int x = 0; x < width; x++)
         for (int y = 0; y < height; y++)
+        {
             gridObjects[x, y] = createGridObject(this, new GridPosition(x, y));
+        }
     }
 
     public Vector3 GetWorldPos(GridPosition gridPosition)

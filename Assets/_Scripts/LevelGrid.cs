@@ -6,14 +6,17 @@ public class LevelGrid : Singleton<LevelGrid>
 {
     public event Action<GridElement, GridPosition, GridPosition> OnAnyGridElementMovedGridPosition;
 
+    [SerializeField] private bool showDebugObjects;
+    
     [SerializeField] private Transform gridDebugObjectPrefab;
     [SerializeField] private Transform gridDebugObjectParent;
 
     [SerializeField] private int width;
     [SerializeField] private int height;
     [SerializeField] private float cellSize;
-
+    
     private List<GridSystem<GridObject>> gridSystems;
+    private GridElement neutron;
 
     protected override void Awake()
     {
@@ -29,7 +32,9 @@ public class LevelGrid : Singleton<LevelGrid>
         GridSystem<GridObject> gridSystem = new(width, height, cellSize, 
             (gridSystem, gridPosition) => new GridObject(gridSystem, gridPosition));
 
-        gridSystem.CreateDebugObjects(gridDebugObjectPrefab, gridDebugObjectParent);
+        if (showDebugObjects)
+            gridSystem.CreateDebugObjects(gridDebugObjectPrefab, gridDebugObjectParent);
+        
         gridSystems.Add(gridSystem);
     }
 
@@ -40,9 +45,29 @@ public class LevelGrid : Singleton<LevelGrid>
     /// <param name="gridElement"> The GridElement to add to the grid </param>
     public void AddGridElementAtGridPos(GridPosition gridPos, GridElement gridElement)
     {
+        if (gridElement is Neutron)
+        {
+            neutron = gridElement;
+        }
+        
         GetGridObjectAtGridPos(gridPos).AddGridElement(gridElement);
     }
 
+    /// <summary>
+    /// Get the first GridElement at the given grid position
+    /// </summary>
+    /// <param name="gridPos"> The grid position to get the GridElement from </param>
+    /// <returns> The first GridElement at the given grid position </returns>
+    public GridElement GetGridElementAtGridPos(GridPosition gridPos)
+    {
+        return GetGridObjectAtGridPos(gridPos).GetGridElement();
+    }
+    
+    public GridElement GetNeutron()
+    {
+        return neutron;
+    }
+    
     /// <summary>
     /// Gets the list of units at the given grid position
     /// </summary>
@@ -95,16 +120,6 @@ public class LevelGrid : Singleton<LevelGrid>
     public bool GridPosHasAnyGridElement(GridPosition gridPos)
     {
         return GetGridObjectAtGridPos(gridPos).HasAnyGridElement();
-    }
-
-    /// <summary>
-    /// Get the first GridElement at the given grid position
-    /// </summary>
-    /// <param name="gridPos"> The grid position to get the GridElement from </param>
-    /// <returns> The first GridElement at the given grid position </returns>
-    public GridElement GetGridElementAtGridPos(GridPosition gridPos)
-    {
-        return GetGridObjectAtGridPos(gridPos).GetGridElement();
     }
 
     /// <summary>

@@ -36,9 +36,10 @@ public abstract class GridElement : MonoBehaviour
             isMoving = false;
             
             GridPosition targetGridPos = LevelGrid.Instance.GetGridPos(targetPosition);
-            
-            LevelGrid.Instance.MoveGridElementGridPos(this, currentGridPosition, targetGridPos);
+            GridPosition previousGridPos = currentGridPosition;
             currentGridPosition = targetGridPos;
+            
+            LevelGrid.Instance.MoveGridElementGridPos(this, previousGridPos, targetGridPos);
         }
     }
     
@@ -51,8 +52,6 @@ public abstract class GridElement : MonoBehaviour
         }
         
         targetPosition = LevelGrid.Instance.GetWorldPos(gridPos);
-      
-        
         isMoving = true;
     }
 
@@ -86,5 +85,16 @@ public abstract class GridElement : MonoBehaviour
         return availableMovePositions.Contains(gridPos);
     }
     
-    public abstract List<GridPosition> GetAvailableMovePositions();
+    public abstract void CalculateAvailableMovePositions();
+    
+    public List<GridPosition> GetAvailableMovePositions() => availableMovePositions;
+    
+    public bool CanMove() 
+    {
+        CalculateAvailableMovePositions();
+        return availableMovePositions.Count > 0;
+    }
+    
+    public GridPosition GetCurrentGridPosition() => currentGridPosition;
+
 }

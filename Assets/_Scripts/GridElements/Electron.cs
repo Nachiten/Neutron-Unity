@@ -8,7 +8,7 @@ public class Electron : GridElement
 {
     [SerializeField] private int playerIndex;
     
-    public override List<GridPosition> GetAvailableMovePositions()
+    public override void CalculateAvailableMovePositions()
     {
         List<Vector2> availableDirections = Constants.directions;
         List<GridPosition> _availableMovePositions = new();
@@ -30,7 +30,6 @@ public class Electron : GridElement
         }
         
         availableMovePositions = _availableMovePositions;
-        return _availableMovePositions;
     }
     
     private GridPosition GetNextGridPositionInDirection(GridPosition originGridPos, Vector2 direction)

@@ -11,7 +11,7 @@ public class TurnSystem : MonoBehaviour
     private int currentTurn;
 
     private enum State
-    { 
+    {
         // Description: The player is moving the Neutron
         MovingNeutron,
         // Description: The player is moving an Electron
