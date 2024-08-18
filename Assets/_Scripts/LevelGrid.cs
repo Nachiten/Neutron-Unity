@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class LevelGrid : Singleton<LevelGrid>
 {
-    public event Action<GridElement, GridPosition, GridPosition> OnAnyGridElementMovedGridPosition;
+    public Action<GridElement, GridPosition, GridPosition> OnAnyGridElementMovedGridPosition;
 
     [SerializeField] private bool showDebugObjects;
     
