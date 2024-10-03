@@ -25,7 +25,7 @@ PrefabInstance:
       value: Neutron
       objectReference: {fileID: 0}
     - target: {fileID: 8434963928437593627, guid: 69010fba7251ff3439b5287e9d0d4ab6, type: 3}
-      propertyPath: m_Materials.Array.data[0]
+      propertyPath: 'm_Materials.Array.data[0]'
       value: 
       objectReference: {fileID: 2100000, guid: fd26edf91e79e3f4dad3c0a5f674e1c3, type: 2}
     - target: {fileID: 8564177933748968326, guid: 69010fba7251ff3439b5287e9d0d4ab6, type: 3}
