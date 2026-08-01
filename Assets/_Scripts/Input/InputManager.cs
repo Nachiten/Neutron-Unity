@@ -1,5 +1,6 @@
 #define USE_NEW_INPUT_SYSTEM
 
+using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -16,7 +17,14 @@ public class InputManager : Singleton<InputManager>
         playerInputActions.Player.Enable();
 #endif
     }
-    
+
+    private void OnDestroy()
+    {
+#if USE_NEW_INPUT_SYSTEM
+        playerInputActions.Player.Disable();
+#endif
+    }
+
     public Vector2 GetMouseScreenPosition()
     {
 #if USE_NEW_INPUT_SYSTEM

@@ -5,9 +5,9 @@ public class GridPositionSelection : MonoBehaviour
 {
     [SerializeField] private WinManager winManager;
     
-    public Action<GridPosition> OnGridPositionSelected;
-    public Action<GridPosition> OnGridPositionHovered;
-    public Action<GridPosition> OnGridPositionUnhovered;
+    public event Action<GridPosition> OnGridPositionSelected;
+    public event Action<GridPosition> OnGridPositionHovered;
+    public event Action<GridPosition> OnGridPositionUnhovered;
     
     private GridPosition hoveredGridPosition = GridPosition.Null;
 
